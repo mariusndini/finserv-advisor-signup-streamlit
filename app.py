@@ -25,7 +25,8 @@ st.subheader("Access the Financial Advisor SiS Application")
 
 st.markdown("""
     Please enter your **Snowflake email** address below to request access.  
-    After submitting, download your credentials to log in. \n\n**Note:** You will be prompted to change your password upon your first login.\n\n
+    After submitting, download your credentials to log in. \n\n**Note:** You will be prompted to change your password upon your first login.
+    \n\n**MFA:** [🔐 Enroll in MFA after logging in](https://docs.snowflake.com/en/user-guide/ui-snowsight-profile#label-snowsight-set-up-mfa).\n\n
     """)
 
 st.markdown("[🔗 Access & Architecture Slides](https://docs.google.com/presentation/d/1pHYRUULcfW-DPZJ5OzfaXL9Bh-MN4V_RfMHxdmkfQac/edit?usp=sharing)")
