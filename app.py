@@ -35,10 +35,12 @@ def check_email(e):
 
     
 
-st.title('Financial Advisor Sign-Up Dashboard')
+st.title('Financial Advisor Sign Up')
 
-st.markdown('To access the Financial Advisor sign-up Application, kindly provide your Snowflake email address below.')
+st.markdown('To access the Financial Advisor SiS Application, kindly provide your Snowflake email address below.')
 st.markdown('Once you\'ve submitted your email, make sure to download your credentials to login.')
+st.markdown('You will be asked to change your password once logging into the Demo Account.')
+
 st.markdown('[Access & Architecture Slides](https://docs.google.com/presentation/d/1pHYRUULcfW-DPZJ5OzfaXL9Bh-MN4V_RfMHxdmkfQac/edit?usp=sharing)')
 st.text("")
 
@@ -81,7 +83,7 @@ log-in URL:
             run_query( f'grant role earnings_chat_role to user "{email_input}";' )
 
             st.markdown('**Download your log-in credentials below!** \n\n Do not exit this app without doing so. \n\n You will be asked to changed your Password after logging in.')
-            st.download_button('Download Credentials', output, 'MyDayCreds.txt')
+            st.download_button('Download Credentials', output, 'MyDayCreds.txt', type="primary", icon="✅")
             st.markdown('log into: https://app.snowflake.com/east-us-2.azure/opa12479 \n\n after downloading your credentials')
 
 
