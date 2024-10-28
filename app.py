@@ -72,7 +72,7 @@ if submit_button:
 
         # Check if the user already exists
         if len(run_query(f"""SHOW USERS LIKE '{email_input}';""")) > 0:
-            st.warning(f"User **{email_input}** already exists. If you need a password reset, please contact [Marius Ndini](mailto:Marius.Ndini@snowflake.com).")
+            st.warning(f"User **{email_input}** already exists. \n\n If you need a password reset, please contact [Marius Ndini](mailto:Marius.Ndini@snowflake.com).")
         else:
             # Create new user
             run_query(f""" 
@@ -89,7 +89,8 @@ if submit_button:
             st.download_button(
                 label="📥 Download Credentials",
                 data=output,
-                file_name="MyDayCreds.txt",
+                type="primary",
+                file_name="FinServCreds.txt",
                 mime="text/plain"
             )
             st.info("Go to the Demo Account: [Snowflake Demo Account](https://app.snowflake.com/east-us-2.azure/opa12479)")
