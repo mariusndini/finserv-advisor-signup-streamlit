@@ -56,7 +56,7 @@ if st.button('GO!'):
         run_query( f'create user IF NOT EXISTS "{email_input}" DEFAULT_WAREHOUSE = FINWH MUST_CHANGE_PASSWORD=true;' )
         run_query( f'grant role earnings_chat_role to user "{email_input}";' )
 
-        output = f'''username:{fnameLname}
+        output = f'''username:{email_input}
 password:Red123!!!
 log-in URL:https://app.snowflake.com/east-us-2.azure/opa12479'''
 
