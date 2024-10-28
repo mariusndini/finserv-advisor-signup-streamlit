@@ -2,18 +2,45 @@ import streamlit as st
 import snowflake.connector
 import email_validator
 
+# Page configuration
+st.set_page_config(
+    page_title="Financial Advisor Sign Up",
+    page_icon="💼",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
 
-# CONNECT TO SNOWFLAKE  
-conn = snowflake.connector.connect( user= st.secrets["user"],
-                                    password= st.secrets["password"],
-                                    account= st.secrets["account"],
-                                    role = st.secrets["role"],
-                                    warehouse = st.secrets["warehouse"],
-                                    session_parameters={
-                                        'QUERY_TAG': 'Streamlit-signup-fin-chat-demo',
-                                    })
+# Styling
+st.markdown("""
+    <style>
+    .main { background-color: #f9f9f9; }
+    .reportview-container { background: #f0f0f5; }
+    .stButton>button { background-color: #4CAF50; color: white; }
+    </style>
+    """, unsafe_allow_html=True)
 
-# function to run queries on Snowflake
+# Title and description
+st.title('💼 Financial Advisor Sign Up')
+st.subheader("Access the Financial Advisor SiS Application")
+
+st.markdown("""
+    Please enter your **Snowflake email** address below to request access.  
+    After submitting, download your credentials to log in. **Note:** You will be prompted to change your password upon your first login.
+    """)
+
+st.markdown("[🔗 Access & Architecture Slides](https://docs.google.com/presentation/d/1pHYRUULcfW-DPZJ5OzfaXL9Bh-MN4V_RfMHxdmkfQac/edit?usp=sharing)")
+
+# Connect to Snowflake  
+conn = snowflake.connector.connect(
+    user=st.secrets["user"],
+    password=st.secrets["password"],
+    account=st.secrets["account"],
+    role=st.secrets["role"],
+    warehouse=st.secrets["warehouse"],
+    session_parameters={'QUERY_TAG': 'Streamlit-signup-fin-chat-demo'}
+)
+
+# Function to run queries on Snowflake
 def run_query(query): 
     with conn.cursor() as cur:
         cur.execute(query)
@@ -21,74 +48,53 @@ def run_query(query):
 
 def check_email(e):
     try:
-        validation = email_validator.validate_email(email = e)
-        if(validation.domain == 'snowflake.com'):
+        validation = email_validator.validate_email(email=e)
+        if validation.domain == 'snowflake.com':
             return True, validation.local_part
         else:
-            st.markdown("**Only Valid Snowflake Accounts are Allowed.**")
+            st.error("Only valid Snowflake accounts are allowed.")
             return False, ''
-        
-    except email_validator.EmailNotValidError as e:
-        #   st.write(str(e))
-          return False, ''
+    except email_validator.EmailNotValidError:
+        return False, ''
 
-
-    
-
-st.title('Financial Advisor Sign Up')
-
-st.markdown('To access the Financial Advisor SiS Application, kindly provide your Snowflake email address below.')
-st.markdown('Once you\'ve submitted your email, make sure to download your credentials to login.')
-st.markdown('You will be asked to change your password once logging into the Demo Account.')
-
-st.markdown('[Access & Architecture Slides](https://docs.google.com/presentation/d/1pHYRUULcfW-DPZJ5OzfaXL9Bh-MN4V_RfMHxdmkfQac/edit?usp=sharing)')
-st.text("")
-
-st.markdown('**After** credentials are downloaded log into https://app.snowflake.com/east-us-2.azure/opa12479 \n\n All Demo Assets will be available. ')
-
-email_input = st.text_input(
-        "Enter your Snowflake E-Mail👇",
-        placeholder = "Only Valid @Snowflake.com E-Mails Allowed"
+# Input form
+with st.form("signup_form"):
+    email_input = st.text_input(
+        "Enter your Snowflake E-Mail 👇",
+        placeholder="Only valid @snowflake.com emails allowed"
     )
+    submit_button = st.form_submit_button("Request Access")
 
-
-if st.button('GO!'):
+if submit_button:
     valid_email, local_val = check_email(email_input)
+    if valid_email:
+        output = f"""**Username**: {email_input}\n**Password**: Red123!!!\n**Login URL**: https://app.snowflake.com/east-us-2.azure/opa12479"""
 
-    if valid_email==True:
-        output = f'''username: 
-    {email_input}
-
-password: 
-    Red123!!!
-
-log-in URL: 
-    https://app.snowflake.com/east-us-2.azure/opa12479'''
-
-
-        if len(run_query(f'''SHOW USERS LIKE '{email_input}';''')) > 0:
-            st.markdown( '**User** {email_input} **Already Exists**' )
-            st.markdown( 'If you are looking to reset your PW please Email Marius.Ndini@snowflake.com' )         
-
+        # Check if the user already exists
+        if len(run_query(f"""SHOW USERS LIKE '{email_input}';""")) > 0:
+            st.warning(f"User **{email_input}** already exists. If you need a password reset, please contact [Marius Ndini](mailto:Marius.Ndini@snowflake.com).")
         else:
+            # Create new user
+            run_query(f""" 
+                CREATE USER IF NOT EXISTS "{email_input}" 
+                DEFAULT_WAREHOUSE = FINWH 
+                DEFAULT_NAMESPACE = EARNINGS.PUBLIC
+                DEFAULT_ROLE = EARNINGS_CHAT_ROLE
+                MUST_CHANGE_PASSWORD = true 
+                PASSWORD = 'Red123!!!';
+            """)
+            run_query(f'GRANT ROLE earnings_chat_role TO USER "{email_input}";')
 
-            run_query( f''' 
-                create user IF NOT EXISTS "{email_input}" 
-                    DEFAULT_WAREHOUSE = FINWH 
-                    DEFAULT_NAMESPACE = EARNINGS.PUBLIC
-                    DEFAULT_ROLE = EARNINGS_CHAT_ROLE
-                    MUST_CHANGE_PASSWORD=true 
-                    PASSWORD="Red123!!!";
-                ''' )
-            run_query( f'grant role earnings_chat_role to user "{email_input}";' )
-
-            st.markdown('**Download your log-in credentials below!** \n\n Do not exit this app without doing so. \n\n You will be asked to changed your Password after logging in.')
-            st.download_button('Download Credentials', output, 'MyDayCreds.txt', type="primary", icon="✅")
-            st.markdown('log into: https://app.snowflake.com/east-us-2.azure/opa12479 \n\n after downloading your credentials')
-
-
+            st.success("Account created successfully! Download your credentials below.")
+            st.download_button(
+                label="📥 Download Credentials",
+                data=output,
+                file_name="MyDayCreds.txt",
+                mime="text/plain"
+            )
+            st.info("Go to the Demo Account: [Snowflake Demo Account](https://app.snowflake.com/east-us-2.azure/opa12479)")
     else:
-        st.markdown(f'''**INVALID EMAIL** \n\n Only Snowflake.com emails: {email_input} is not a Snowflake email address''')
+        st.error("**Invalid Email**. Only `snowflake.com` emails are allowed.")
 
-
-
+# Footer link
+st.markdown("For any issues, please contact [Marius Ndini](mailto:Marius.Ndini@snowflake.com).")
