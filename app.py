@@ -53,22 +53,8 @@ email_input = st.text_input(
 if st.button('GO!'):
     valid_email, local_val = check_email(email_input)
     if valid_email==True:
-        # run_query( f' CALL admin.public.create_new_user(\'{email_input.upper()}\'); ' )
-        num_roles_qry = run_query( f"show roles like 'NATIVE_APP_ROLE_%';" )
-        num_roles = len(num_roles_qry)+1
-
+        run_query( f'create user IF NOT EXISTS "{email_input}" DEFAULT_WAREHOUSE = FINWH;' )
         run_query( f"grant role earnings_chat_role to user {email_input};" )
-
-        # fnameLname = local_val.replace('.','')
-        # run_query( f""" Create or replace user {fnameLname} 
-        #                 EMAIL = '{email_input}'
-        #                 PASSWORD = 'Red123!!!'
-        #                 default_role = NATIVE_APP_ROLE_{num_roles} 
-        #                 must_change_password = true 
-        #                 DEFAULT_WAREHOUSE = SNOWHEALTH;""" )
-        
-        # run_query( f"grant role NATIVE_APP_ROLE_{num_roles} to user {fnameLname};" )
-        # run_query( f"GRANT APPLICATION ROLE MYDAYNATIVEAPP.APP_PUBLIC TO ROLE NATIVE_APP_ROLE_{num_roles};" )
 
         output = f'''username:{fnameLname}
 password:Red123!!!
