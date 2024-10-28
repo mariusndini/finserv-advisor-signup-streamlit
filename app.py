@@ -27,11 +27,11 @@ st.subheader("Access the Financial Advisor App")
 
 st.markdown("""
     Please enter your **Snowflake email** address below to request access.  
-    After submitting, download your credentials to log in. \n\n**Note:** You will be prompted to change your password upon your first login.
-    \n\n**MFA:** [🔐 You are also required to enroll in MFA after logging in](https://docs.snowflake.com/en/user-guide/ui-snowsight-profile#label-snowsight-set-up-mfa)\n\n
+    After submitting, download your credentials.
+    \n\n**MFA:** [🔐 You are required to enroll in MFA after logging in](https://docs.snowflake.com/en/user-guide/ui-snowsight-profile#label-snowsight-set-up-mfa)\n\n
     """)
 
-st.markdown("[🔗 Access & Architecture Slides](https://docs.google.com/presentation/d/1pHYRUULcfW-DPZJ5OzfaXL9Bh-MN4V_RfMHxdmkfQac/edit?usp=sharing)")
+st.markdown("[🔗 Access & Architecture Slides](https://docs.google.com/presentation/d/1JVve7DwN3e_T89C9-U6jG9naxsnLK4GMESRKP7tH4O0/edit?usp=sharing)")
 
 # Connect to Snowflake  
 conn = snowflake.connector.connect(
@@ -85,7 +85,7 @@ if submit_button:
     valid_email, local_val = check_email(email_input)
     if valid_email:
         generated_password = generate_password(8)
-        output = f"""Username:\n{email_input}\n\nPassword:\n{generated_password}\n\nAcct URL:\nhttps://app.snowflake.com/east-us-2.azure/opa12479"""
+        output = f"""User Name:\n{email_input}\n\nPassword:\n{generated_password}\n\nAcct URL:\nhttps://app.snowflake.com/east-us-2.azure/opa12479"""
 
         # Check if the user already exists
         if len(run_query(f"""SHOW USERS LIKE '{email_input}';""")) > 0:
