@@ -33,6 +33,8 @@ st.markdown("""
 
 st.markdown("[🔗 Access & Architecture Slides](https://docs.google.com/presentation/d/1JVve7DwN3e_T89C9-U6jG9naxsnLK4GMESRKP7tH4O0/edit?usp=sharing)")
 
+st.markdown("The Demo is Hosted [here]([https://app.snowflake.com/east-us-2.azure/opa12479)")
+
 # Connect to Snowflake  
 conn = snowflake.connector.connect(
     user=st.secrets["user"],
