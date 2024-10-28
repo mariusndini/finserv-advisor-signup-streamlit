@@ -23,7 +23,7 @@ st.markdown("""
 
 # Title and description
 st.title('💼 Financial Advisor Sign Up')
-st.subheader("Access the Financial Advisor SiS Application")
+st.subheader("Access the Financial Advisor App")
 
 st.markdown("""
     Please enter your **Snowflake email** address below to request access.  
@@ -85,7 +85,7 @@ if submit_button:
     valid_email, local_val = check_email(email_input)
     if valid_email:
         generated_password = generate_password(8)
-        output = f"""Username:\n{email_input}\n\nPassword:\n{generated_password}\n\nURL: https://app.snowflake.com/east-us-2.azure/opa12479"""
+        output = f"""Username:\n{email_input}\n\nPassword:\n{generated_password}\n\nAcct URL:\nhttps://app.snowflake.com/east-us-2.azure/opa12479"""
 
         # Check if the user already exists
         if len(run_query(f"""SHOW USERS LIKE '{email_input}';""")) > 0:
