@@ -54,30 +54,34 @@ if st.button('GO!'):
     valid_email, local_val = check_email(email_input)
     if valid_email==True:
 
-        st.markdown( len(run_query(f'''SHOW USERS LIKE '{email_input}';''')) )
+        if len(run_query(f'''SHOW USERS LIKE '{email_input}';''')) > 0:
+            st.markdown( 'User Exists - change PW' )
 
-        run_query( f''' 
-create user IF NOT EXISTS "{email_input}" 
-    DEFAULT_WAREHOUSE = FINWH 
-    DEFAULT_NAMESPACE = EARNINGS.PUBLIC
-    DEFAULT_ROLE = EARNINGS_CHAT_ROLE
-    MUST_CHANGE_PASSWORD=true 
-    PASSWORD="Red123!!!";
-''' )
-        run_query( f'grant role earnings_chat_role to user "{email_input}";' )
 
-        output = f'''username: 
-{email_input}
+        else:
 
-password: 
-    Red123!!!
+            run_query( f''' 
+    create user IF NOT EXISTS "{email_input}" 
+        DEFAULT_WAREHOUSE = FINWH 
+        DEFAULT_NAMESPACE = EARNINGS.PUBLIC
+        DEFAULT_ROLE = EARNINGS_CHAT_ROLE
+        MUST_CHANGE_PASSWORD=true 
+        PASSWORD="Red123!!!";
+    ''' )
+            run_query( f'grant role earnings_chat_role to user "{email_input}";' )
 
-log-in URL: 
-    https://app.snowflake.com/east-us-2.azure/opa12479'''
+            output = f'''username: 
+    {email_input}
 
-        st.markdown('**Download your log-in credentials below!** \n\n Do not exit this app without doing so. \n\n You will be asked to changed your Password after logging in.')
-        st.download_button('Download Credentials', output, 'MyDayCreds.txt')
-        st.markdown('log into: https://app.snowflake.com/east-us-2.azure/opa12479 \n\n after downloading your credentials')
+    password: 
+        Red123!!!
+
+    log-in URL: 
+        https://app.snowflake.com/east-us-2.azure/opa12479'''
+
+            st.markdown('**Download your log-in credentials below!** \n\n Do not exit this app without doing so. \n\n You will be asked to changed your Password after logging in.')
+            st.download_button('Download Credentials', output, 'MyDayCreds.txt')
+            st.markdown('log into: https://app.snowflake.com/east-us-2.azure/opa12479 \n\n after downloading your credentials')
 
 
     else:
