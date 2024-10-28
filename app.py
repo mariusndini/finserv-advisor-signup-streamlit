@@ -1,6 +1,8 @@
 import streamlit as st
 import snowflake.connector
 import email_validator
+import secrets
+import string
 
 # Page configuration
 st.set_page_config(
@@ -26,7 +28,7 @@ st.subheader("Access the Financial Advisor SiS Application")
 st.markdown("""
     Please enter your **Snowflake email** address below to request access.  
     After submitting, download your credentials to log in. \n\n**Note:** You will be prompted to change your password upon your first login.
-    \n\n**MFA:** [🔐 You are also required to enroll in MFA after logging in](https://docs.snowflake.com/en/user-guide/ui-snowsight-profile#label-snowsight-set-up-mfa).\n\n
+    \n\n**MFA:** [🔐 You are also required to enroll in MFA after logging in](https://docs.snowflake.com/en/user-guide/ui-snowsight-profile#label-snowsight-set-up-mfa)\n\n
     """)
 
 st.markdown("[🔗 Access & Architecture Slides](https://docs.google.com/presentation/d/1pHYRUULcfW-DPZJ5OzfaXL9Bh-MN4V_RfMHxdmkfQac/edit?usp=sharing)")
@@ -47,6 +49,7 @@ def run_query(query):
         cur.execute(query)
         return cur.fetchall()
 
+# Check if email is valid snowflake.com email
 def check_email(e):
     try:
         validation = email_validator.validate_email(email=e)
@@ -57,6 +60,18 @@ def check_email(e):
             return False, ''
     except email_validator.EmailNotValidError:
         return False, ''
+    
+# Function to generate a secure random password
+def generate_password(length=12):
+    characters = string.ascii_letters + string.digits + string.punctuation
+    while True:
+        password = ''.join(secrets.choice(characters) for i in range(length))
+        # Ensure the password has at least one uppercase letter, one digit, and one symbol
+        if (any(c.isupper() for c in password) and 
+            any(c.isdigit() for c in password) and 
+            any(c in string.punctuation for c in password)):
+            return password
+
 
 # Input form
 with st.form("signup_form"):
@@ -75,6 +90,7 @@ if submit_button:
         if len(run_query(f"""SHOW USERS LIKE '{email_input}';""")) > 0:
             st.warning(f"User **{email_input}** already exists. \n\n If you need a password reset, please contact [Marius Ndini](mailto:Marius.Ndini@snowflake.com).")
         else:
+            generated_password = generate_password(8)
             # Create new user
             run_query(f""" 
                 CREATE USER IF NOT EXISTS "{email_input}" 
@@ -82,7 +98,7 @@ if submit_button:
                 DEFAULT_NAMESPACE = EARNINGS.PUBLIC
                 DEFAULT_ROLE = EARNINGS_CHAT_ROLE
                 MUST_CHANGE_PASSWORD = true 
-                PASSWORD = 'Red123!!!';
+                PASSWORD = '{generated_password}';
             """)
             run_query(f'GRANT ROLE earnings_chat_role TO USER "{email_input}";')
 
