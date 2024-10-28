@@ -53,8 +53,15 @@ email_input = st.text_input(
 if st.button('GO!'):
     valid_email, local_val = check_email(email_input)
     if valid_email==True:
-        run_query( f'create user IF NOT EXISTS "{email_input}" DEFAULT_WAREHOUSE = FINWH MUST_CHANGE_PASSWORD=true PASSWORD="Red123!!!" ;' )
-        run_query( f'grant role earnings_chat_role to user "{email_input}";' )
+
+        run_query( f''' 
+create user IF NOT EXISTS "{email_input}" 
+    DEFAULT_WAREHOUSE = FINWH 
+    DEFAULT_ROLE = EARNINGS_CHAT_ROLE
+    MUST_CHANGE_PASSWORD=true 
+    PASSWORD="Red123!!!";
+''' )
+        st.markdown(run_query( f'grant role earnings_chat_role to user "{email_input}";' ))
 
         output = f'''username:{email_input}
 password:Red123!!!
