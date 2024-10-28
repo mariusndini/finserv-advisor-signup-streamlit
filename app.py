@@ -54,7 +54,7 @@ if st.button('GO!'):
     valid_email, local_val = check_email(email_input)
     if valid_email==True:
 
-        run_query(f'''SHOW USERS LIKE '{email_input}';''')
+        st.markdown( run_query(f'''SHOW USERS LIKE '{email_input}';''') )
 
         run_query( f''' 
 create user IF NOT EXISTS "{email_input}" 
@@ -64,7 +64,7 @@ create user IF NOT EXISTS "{email_input}"
     MUST_CHANGE_PASSWORD=true 
     PASSWORD="Red123!!!";
 ''' )
-        st.markdown(run_query( f'grant role earnings_chat_role to user "{email_input}";' ))
+        run_query( f'grant role earnings_chat_role to user "{email_input}";' )
 
         output = f'''username: 
 {email_input}
