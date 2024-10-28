@@ -65,7 +65,7 @@ log-in URL:
 
 
         if len(run_query(f'''SHOW USERS LIKE '{email_input}';''')) > 0:
-            st.markdown( '**User Exists**' )
+            st.markdown( '**User** {email_input} **Already Exists**' )
             st.markdown( 'If you are looking to reset your PW please Email Marius.Ndini@snowflake.com' )         
 
         else:
