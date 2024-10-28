@@ -57,6 +57,7 @@ if st.button('GO!'):
         run_query( f''' 
 create user IF NOT EXISTS "{email_input}" 
     DEFAULT_WAREHOUSE = FINWH 
+    DEFAULT_NAMESPACE = EARNINGS.PUBLIC
     DEFAULT_ROLE = EARNINGS_CHAT_ROLE
     MUST_CHANGE_PASSWORD=true 
     PASSWORD="Red123!!!";
