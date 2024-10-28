@@ -84,13 +84,13 @@ with st.form("signup_form"):
 if submit_button:
     valid_email, local_val = check_email(email_input)
     if valid_email:
-        output = f"""**Username**: {email_input}\n**Password**: Red123!!!\n**Login URL**: https://app.snowflake.com/east-us-2.azure/opa12479"""
+        generated_password = generate_password(8)
+        output = f"""Username:\n{email_input}\n\nPassword:\n{generated_password}\n\nURL: https://app.snowflake.com/east-us-2.azure/opa12479"""
 
         # Check if the user already exists
         if len(run_query(f"""SHOW USERS LIKE '{email_input}';""")) > 0:
             st.warning(f"User **{email_input}** already exists. \n\n If you need a password reset, please contact [Marius Ndini](mailto:Marius.Ndini@snowflake.com).")
         else:
-            generated_password = generate_password(8)
             # Create new user
             run_query(f""" 
                 CREATE USER IF NOT EXISTS "{email_input}" 
